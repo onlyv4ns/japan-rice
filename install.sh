@@ -132,7 +132,6 @@ else
     missing_theme_pkgs=()
     dpkg -s gtk2-engines-murrine >/dev/null 2>&1 || missing_theme_pkgs+=("gtk2-engines-murrine")
     command -v sassc >/dev/null 2>&1 || missing_theme_pkgs+=("sassc")
-    [ -d "/usr/share/icons/Papirus-Dark" ] || missing_theme_pkgs+=("papirus-icon-theme")
     if [ "${#missing_theme_pkgs[@]}" -gt 0 ]; then
       echo "Missing: ${missing_theme_pkgs[*]}"
       sudo apt update && sudo apt install -y "${missing_theme_pkgs[@]}"
@@ -152,6 +151,34 @@ else
     fi
   else
     echo "Skipping; GTK apps (Thunar, etc.) may render with the light default theme."
+  fi
+fi
+echo
+
+echo "-- Icon theme --"
+ICON_THEME_NAME="Tela-pink-dark"
+ICON_THEME_REPO="https://github.com/vinceliuice/Tela-icon-theme"
+if [ -d "$HOME/.local/share/icons/$ICON_THEME_NAME" ] || [ -d "/usr/share/icons/$ICON_THEME_NAME" ]; then
+  echo "$ICON_THEME_NAME already installed."
+else
+  echo "$ICON_THEME_NAME not found."
+  read -rp "Build and install it now? [y/N] " ans
+  if [[ "$ans" =~ ^[Yy]$ ]]; then
+    if command -v git >/dev/null 2>&1; then
+      tmp_icon_dir="$(mktemp -d)"
+      echo "Cloning $ICON_THEME_REPO..."
+      if git clone --depth 1 "$ICON_THEME_REPO" "$tmp_icon_dir"; then
+        (cd "$tmp_icon_dir" && ./install.sh pink)
+        echo "Installed $ICON_THEME_NAME to ~/.local/share/icons."
+      else
+        echo "Clone failed; install manually from $ICON_THEME_REPO"
+      fi
+      rm -rf "$tmp_icon_dir"
+    else
+      echo "Need git to build the icon theme automatically; install manually from $ICON_THEME_REPO"
+    fi
+  else
+    echo "Skipping; GTK apps will use whatever icon theme is already installed."
   fi
 fi
 echo
