@@ -1,0 +1,169 @@
+#
+# reload / restart
+#
+
+# reload sxhkd config
+super + ctrl + r
+    pkill -USR1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config' -t 1500
+
+# quit/restart bspwm
+ctrl + shift + {q,r}
+    bspc {quit,wm -r}
+
+#
+# Windows-style shortcuts
+#
+
+# open terminal
+super + Return
+    kitty
+
+# file explorer (Win+E)
+super + e
+    thunar
+
+# show desktop (Win+D)
+super + d
+    ~/bin/show-desktop
+
+# search / app launcher (Win+S)
+super + s
+    setxkbmap -layout us; rofi -m -1 -show drun
+
+# run dialog (Win+R)
+super + r
+    setxkbmap -layout us; rofi -m -1 -show run
+
+# lock screen (Win+L)
+super + l
+    sh $HOME/bin/screen-lock
+
+# power / quick-link menu (Win+X)
+super + x
+    sh $HOME/bin/powermenu
+
+# emoji picker (Win+.)
+super + period
+    setxkbmap -layout us; rofi -modi emoji -m -1 -show emoji
+
+# close window (Alt+F4)
+alt + F4
+    bspc node -c
+
+# task manager (Ctrl+Shift+Esc)
+ctrl + shift + Escape
+    kitty -e btop
+
+# toggle polybar
+super + p
+    sh $HOME/bin/toggle-polybar
+
+# random wallpaper
+super + w
+    sh $HOME/bin/random_wallpaper
+
+# change keyboard language (already matches Windows Alt+Shift)
+Alt_L + shift
+    sh $HOME/bin/change_language.sh
+
+Shift_L + alt
+    sh $HOME/bin/change_language.sh
+
+#
+# screenshots (Windows-style: PrtScn = full screen, Win+Shift+S = area)
+#
+
+Print
+    scrot ~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png -e 'notify-send "Screenshot saved" "$f"'
+
+super + shift + s
+    scrot -s ~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png -e 'notify-send "Screenshot saved" "$f"'
+
+#
+# other app launchers
+#
+
+super + shift + {f,p,t,c,v,i,x,q,k,y}
+    {firefox, \
+    pavucontrol, \
+    Telegram, \
+    setxkbmap -layout us; sh $HOME/bin/calculator, \
+    virtualbox, \
+    firefox --private-window, \
+    sh $HOME/bin/xcolor-pick, \
+    sh $HOME/bin/bible, \
+    kitty -e calcurse, \
+    kitty -e sh $HOME/bin/timer}
+
+#
+# volume / brightness (media keys, unchanged)
+#
+
+XF86Audio{RaiseVolume,LowerVolume,Mute}
+    sh $HOME/bin/volume{ --up, --down, --toggle}
+
+XF86MonBrightness{Up,Down}
+    sh $HOME/bin/brightness{ --up, --down}
+
+#
+# window states
+#
+
+super + {t,ctrl + t,f}
+    bspc node -t {tiled,pseudo_tiled,fullscreen}
+
+super + space
+    bspc node -t "~"{floating,tiled}
+
+#
+# focus / move windows (arrow keys instead of vim-style hjkl)
+#
+
+super + {Left,Down,Up,Right}
+    bspc node -f {west,south,north,east}
+
+super + shift + {Left,Down,Up,Right}
+    bspc node -s {west,south,north,east}
+
+# resize focused window (Win+Ctrl+Arrows)
+super + ctrl + {Left,Down,Up,Right}
+    bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# cycle windows (already matches Windows Alt+Tab)
+alt + {_,shift + }Tab
+    bspc node -f {next.local,prev.local}
+
+# focus the last node/desktop
+super + grave
+    bspc {node,desktop} -f last
+
+#
+# workspaces (Win+1-9 = switch, Win+Shift+1-9 = move window)
+#
+
+super + {_,shift + }{1-9,0}
+    bspc {desktop -f,node -d} '^{1-9,10}'
+
+#
+# preselect (bspwm-specific, no Windows equivalent - kept for tiling power users)
+#
+
+super + ctrl + {1-9}
+    bspc node -o 0.{1-9}
+
+super + ctrl + space
+    bspc node -p cancel
+
+super + ctrl + shift + space
+    bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#
+# node flags (bspwm-specific, kept)
+#
+
+super + ctrl + {m,x,y,z}
+    bspc node -g {marked,locked,sticky,private}
+
+# swap the current node and the biggest window
+super + g
+    bspc node -s biggest.window

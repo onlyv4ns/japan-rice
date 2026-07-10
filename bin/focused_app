@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Prints an icon + app name for the currently focused window (used by polybar).
+# Pass --watch to stream an updated line every time focus changes (for
+# polybar's `tail = true` custom/script modules).
+
+ICON_TERMINAL=$'\uf120'
+ICON_BROWSER=$'\uf269'
+ICON_FOLDER=$'\uf07b'
+ICON_CODE=$'\uf121'
+ICON_DEFAULT=$'\uf108'
+
+print_focused() {
+    local wid class icon
+    wid=$(bspc query -N -n .focused 2>/dev/null)
+    if [ -z "$wid" ]; then
+        printf '%s Desktop\n' "$ICON_DEFAULT"
+        return
+    fi
+
+    class=$(xprop -id "$wid" WM_CLASS 2>/dev/null | sed -n 's/.*= "[^"]*", "\([^"]*\)"/\1/p')
+    [ -z "$class" ] && class="Desktop"
+
+    case "$(printf '%s' "$class" | tr '[:upper:]' '[:lower:]')" in
+        kitty|alacritty|xterm|st|urxvt|termite)
+            icon="$ICON_TERMINAL" ;;
+        firefox|firefox-esr|chromium|chromium-browser|google-chrome|brave-browser)
+            icon="$ICON_BROWSER" ;;
+        thunar|nautilus|pcmanfm|files)
+            icon="$ICON_FOLDER" ;;
+        code|code-oss|vscode|nvim|neovim)
+            icon="$ICON_CODE" ;;
+        *)
+            icon="$ICON_DEFAULT" ;;
+    esac
+
+    printf '%s %s\n' "$icon" "$class"
+}
+
+if [ "$1" = "--watch" ]; then
+    print_focused
+    bspc subscribe node_focus desktop_focus node_transfer node_remove 2>/dev/null | while read -r _; do
+        print_focused
+    done
+else
+    print_focused
+fi

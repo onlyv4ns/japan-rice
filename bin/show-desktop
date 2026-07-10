@@ -1,0 +1,13 @@
+#!/bin/bash
+# Toggle "show desktop": hide all windows on the focused desktop, or
+# restore them if they're already hidden (like Windows Win+D).
+visible=$(bspc query -N -d -n .window.!hidden)
+if [ -n "$visible" ]; then
+    for id in $visible; do
+        bspc node "$id" -g hidden=on
+    done
+else
+    for id in $(bspc query -N -d -n .window.hidden); do
+        bspc node "$id" -g hidden=off
+    done
+fi
