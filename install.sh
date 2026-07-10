@@ -44,7 +44,10 @@ FILES=(
   Pictures/bg.png
 )
 
-DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop)
+DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop pamixer)
+
+NERD_FONT_ZIP_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
+NERD_FONT_DEST="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
 
 echo "== Japan Rice Installer =="
 echo "Source: $RICE_DIR"
@@ -65,6 +68,52 @@ if [ "${#missing[@]}" -gt 0 ]; then
   fi
 else
   echo "All dependencies already installed."
+fi
+echo
+
+echo "-- Checking fonts --"
+# polybar/kitty rely on icon glyphs (power button, workspace icons, focused_app
+# icons) that only exist in these fonts. Without them the glyphs render blank.
+if command -v fc-list >/dev/null 2>&1; then
+  missing_fonts=()
+  fc-list | grep -qi "Material Design Icons" || missing_fonts+=("fonts-materialdesignicons-webfont")
+  if [ "${#missing_fonts[@]}" -gt 0 ]; then
+    echo "Missing: ${missing_fonts[*]}"
+    read -rp "Install missing font packages via apt now? [y/N] " ans
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+      sudo apt update && sudo apt install -y "${missing_fonts[@]}"
+    else
+      echo "Skipping; some polybar icons may render blank until installed."
+    fi
+  fi
+
+  if fc-list | grep -qi "JetBrainsMono Nerd Font"; then
+    echo "JetBrainsMono Nerd Font already installed."
+  else
+    echo "JetBrainsMono Nerd Font not found (needed for polybar/kitty icons)."
+    read -rp "Download and install it now? [y/N] " ans
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+      if command -v curl >/dev/null 2>&1 && command -v unzip >/dev/null 2>&1; then
+        tmp_font_dir="$(mktemp -d)"
+        echo "Downloading JetBrainsMono Nerd Font..."
+        if curl -fL -o "$tmp_font_dir/JetBrainsMono.zip" "$NERD_FONT_ZIP_URL"; then
+          mkdir -p "$NERD_FONT_DEST"
+          unzip -oq "$tmp_font_dir/JetBrainsMono.zip" "JetBrainsMonoNerdFont-*.ttf" -d "$NERD_FONT_DEST"
+          fc-cache -f "$NERD_FONT_DEST" >/dev/null
+          echo "Installed JetBrainsMono Nerd Font."
+        else
+          echo "Download failed; install manually from https://www.nerdfonts.com/"
+        fi
+        rm -rf "$tmp_font_dir"
+      else
+        echo "Need curl and unzip to install automatically; install manually from https://www.nerdfonts.com/"
+      fi
+    else
+      echo "Skipping; polybar/kitty icons will render blank until this font is installed."
+    fi
+  fi
+else
+  echo "fc-list not found (fontconfig missing); skipping font checks."
 fi
 echo
 

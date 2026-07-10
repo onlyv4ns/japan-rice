@@ -46,6 +46,15 @@ toggle_mute() {
 	fi
 }
 
+# Print "VOL <n>%" or "VOL muted" for the polybar module
+polybar_status() {
+	if [[ "$(pamixer --get-mute)" == "true" ]]; then
+		echo "VOL muted"
+	else
+		echo "VOL $(get_volume)%"
+	fi
+}
+
 # Execute accordingly
 if [[ "$1" == "--get" ]]; then
 	get_volume
@@ -55,6 +64,8 @@ elif [[ "$1" == "--down" ]]; then
         down_volume
 elif [[ "$1" == "--toggle" ]]; then
 	toggle_mute
+elif [[ "$1" == "--status" ]]; then
+	polybar_status
 else
 	get_volume
 fi
