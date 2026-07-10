@@ -31,6 +31,11 @@ bspc config pointer_action3 resize_corner
 # rules
 bspc rule -a feh state=floating
 
+# xdg-desktop-portal-gtk's file picker (used by Chrome, Firefox, etc. for
+# Open/Save dialogs) defaults to a size taller than most screens and ignores
+# our gsettings default, so pin it to a sane centered size instead.
+bspc rule -a Xdg-desktop-portal-gtk state=floating rectangle=850x550+258+109
+
 # start resources
 xrdb merge ~/.Xresources
 

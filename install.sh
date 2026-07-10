@@ -44,7 +44,7 @@ FILES=(
   Pictures/bg.png
 )
 
-DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop pamixer)
+DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop pamixer xdotool)
 
 NERD_FONT_ZIP_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
 NERD_FONT_DEST="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
@@ -117,8 +117,58 @@ else
 fi
 echo
 
+echo "-- GTK theme --"
+# Without this, GTK apps (Thunar, etc.) silently fall back to the light
+# default theme since gtk-3.0/settings.ini points at a theme that isn't
+# bundled anywhere and has to be built locally.
+GTK_THEME_NAME="Tokyonight-Pink-Dark-Storm"
+GTK_THEME_REPO="https://github.com/Fausto-Korpsvart/Tokyonight-GTK-Theme"
+if [ -d "$HOME/.themes/$GTK_THEME_NAME" ] || [ -d "/usr/share/themes/$GTK_THEME_NAME" ]; then
+  echo "$GTK_THEME_NAME already installed."
+else
+  echo "$GTK_THEME_NAME not found."
+  read -rp "Build and install it now? [y/N] " ans
+  if [[ "$ans" =~ ^[Yy]$ ]]; then
+    missing_theme_pkgs=()
+    dpkg -s gtk2-engines-murrine >/dev/null 2>&1 || missing_theme_pkgs+=("gtk2-engines-murrine")
+    command -v sassc >/dev/null 2>&1 || missing_theme_pkgs+=("sassc")
+    [ -d "/usr/share/icons/Papirus-Dark" ] || missing_theme_pkgs+=("papirus-icon-theme")
+    if [ "${#missing_theme_pkgs[@]}" -gt 0 ]; then
+      echo "Missing: ${missing_theme_pkgs[*]}"
+      sudo apt update && sudo apt install -y "${missing_theme_pkgs[@]}"
+    fi
+    if command -v git >/dev/null 2>&1 && command -v sassc >/dev/null 2>&1; then
+      tmp_theme_dir="$(mktemp -d)"
+      echo "Cloning $GTK_THEME_REPO..."
+      if git clone --depth 1 "$GTK_THEME_REPO" "$tmp_theme_dir"; then
+        (cd "$tmp_theme_dir/themes" && ./install.sh --tweaks storm -t pink -c dark)
+        echo "Installed $GTK_THEME_NAME to ~/.themes."
+      else
+        echo "Clone failed; install manually from $GTK_THEME_REPO"
+      fi
+      rm -rf "$tmp_theme_dir"
+    else
+      echo "Need git and sassc to build the theme automatically; install manually from $GTK_THEME_REPO"
+    fi
+  else
+    echo "Skipping; GTK apps (Thunar, etc.) may render with the light default theme."
+  fi
+fi
+echo
+
 echo "-- Creating runtime directories --"
 mkdir -p "$HOME/Pictures/Screenshots"
+echo
+
+echo "-- GTK defaults --"
+# GTK3 file choosers default to a huge remembered size (grows every time it's
+# resized). Start it at something sane instead of covering most of the screen.
+if command -v gsettings >/dev/null 2>&1; then
+  gsettings set org.gtk.Settings.FileChooser window-size "(850, 550)"
+  echo "Set GTK file chooser default window size to 850x550."
+else
+  echo "gsettings not found; skipping GTK file chooser size default."
+fi
 echo
 
 echo "-- Linking configs --"
