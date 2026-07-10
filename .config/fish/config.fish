@@ -4,7 +4,7 @@ alias cls="clear"
 alias g="git"
 alias n="nvim"
 alias m="micro"
-alias cat="bat"
+alias cat="batcat"
 alias feh="feh --scale-down"
 
 alias apt_update="sudo apt update && sudo apt upgrade -y"

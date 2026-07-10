@@ -21,7 +21,7 @@ A Japan-themed [bspwm](https://github.com/baskerville/bspwm) desktop rice — To
 ## Requirements
 
 - Arch/Debian/Ubuntu-family Linux (tested on Ubuntu 26.04) with Xorg
-- `bspwm`, `sxhkd`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`, `fastfetch`, `feh`, `fish`, `scrot`, `btop`, `htop`, `pamixer`, `xdotool`, `neovim`
+- `bspwm`, `sxhkd`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`, `fastfetch`, `feh`, `fish`, `scrot`, `btop`, `htop`, `pamixer`, `xdotool`, `neovim`, `eza`, `bat` (installs as `batcat` on Debian/Ubuntu)
 - A [Nerd Font](https://www.nerdfonts.com/) — JetBrainsMono Nerd Font is used throughout (terminal, GTK, rofi, polybar icons), plus the Material Design Icons font for a couple of polybar glyphs
 - GTK theme **Tokyonight-Pink-Dark-Storm** ([Fausto-Korpsvart/Tokyonight-GTK-Theme](https://github.com/Fausto-Korpsvart/Tokyonight-GTK-Theme), needs `gtk2-engines-murrine` + `sassc` to build) and icon theme **Tela-pink-dark** ([vinceliuice/Tela-icon-theme](https://github.com/vinceliuice/Tela-icon-theme)) so GTK apps (Thunar, etc.) match the rest of the rice instead of falling back to a light default theme
 
@@ -185,3 +185,4 @@ Font: **JetBrainsMono Nerd Font** (terminal, GTK, rofi). GTK theme: **Tokyonight
 - File/Save dialogs opened via `xdg-desktop-portal-gtk` (Chrome, Firefox, etc.) are pinned to a fixed centered floating size by a `bspwmrc` rule — left alone, they default to a size taller than most screens and their Open/Cancel buttons end up off-screen.
 - `.config/nvim/init.lua` is a minimal config that bootstraps [lazy.nvim](https://github.com/folke/lazy.nvim), applies `tokyonight.nvim` (`night` style) to match kitty's palette, and adds `nvim-tree.lua` as a file-explorer sidebar (auto-opens when you `nvim <folder>`, `Ctrl+N` toggles it) — no LSP/completion plugins beyond that.
 - `.config/htop/htoprc` uses htop's `Default` color scheme. htop only ships a handful of hardcoded schemes (no arbitrary hex colors like kitty/nvim/btop) — a `Black Night` variant was tried but reverted back to Default.
+- `ls`/`ll`/`la` are fish functions (`.config/fish/functions/`) wrapping `eza --icons` — plain aliases didn't work because `eza` with zero path arguments prints nothing instead of defaulting to `.`, so the functions default to `.` explicitly when called with no arguments.

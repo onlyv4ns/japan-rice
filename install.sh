@@ -22,6 +22,9 @@ FILES=(
   .config/fish/config.fish
   .config/fish/conf.d/tokyonight.fish
   .config/fish/functions/fish_prompt.fish
+  .config/fish/functions/ls.fish
+  .config/fish/functions/ll.fish
+  .config/fish/functions/la.fish
   .config/rofi/config.rasi
   .config/rofi/catppuccin.rasi
   .config/gtk-3.0/settings.ini
@@ -46,7 +49,7 @@ FILES=(
   Pictures/bg.png
 )
 
-DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop pamixer xdotool htop)
+DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop pamixer xdotool htop eza)
 
 NERD_FONT_ZIP_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
 NERD_FONT_DEST="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
@@ -82,6 +85,19 @@ if ! command -v nvim >/dev/null 2>&1; then
     sudo apt update && sudo apt install -y neovim
   else
     echo "Skipping; the fish 'n' alias and .config/nvim won't work until installed."
+  fi
+  echo
+fi
+
+# Handled separately from DEPS: the command is "batcat" but the apt package
+# is "bat" (renamed on Debian/Ubuntu due to a name clash with another tool).
+if ! command -v batcat >/dev/null 2>&1; then
+  echo "Missing: bat (batcat)"
+  read -rp "Install it via apt now? [y/N] " ans
+  if [[ "$ans" =~ ^[Yy]$ ]]; then
+    sudo apt update && sudo apt install -y bat
+  else
+    echo "Skipping; the fish 'cat' alias (batcat) won't work until installed."
   fi
   echo
 fi
