@@ -4,6 +4,15 @@
 CARD=$(basename "$(find /sys/class/backlight/* | head -n 1)")
 
 
+# Get current brightness
+get_backlight() {
+	if [[ "$CARD" == *"intel_"* ]]; then
+		brightnessctl --device "$CARD" -m | cut -d',' -f4
+	else
+		printf '%.0f%%\n' "$(light -G)"
+	fi
+}
+
 # Increase brightness
 inc_backlight() {
 	if [[ "$CARD" == *"intel_"* ]]; then
