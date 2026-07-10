@@ -117,6 +117,10 @@ else
 fi
 echo
 
+echo "-- Creating runtime directories --"
+mkdir -p "$HOME/Pictures/Screenshots"
+echo
+
 echo "-- Linking configs --"
 backed_up=0
 linked=0
