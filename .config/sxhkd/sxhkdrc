@@ -15,7 +15,7 @@ ctrl + shift + {q,r}
 #
 
 # open terminal
-super + Return
+ctrl + alt + t
     kitty
 
 # file explorer (Win+E)

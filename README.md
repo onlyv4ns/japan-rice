@@ -21,10 +21,11 @@ A Japan-themed [bspwm](https://github.com/baskerville/bspwm) desktop rice — To
 ## Requirements
 
 - Arch/Debian/Ubuntu-family Linux (tested on Ubuntu 26.04) with Xorg
-- `bspwm`, `sxhkd`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`, `fastfetch`, `feh`, `fish`, `scrot`, `btop`
-- A [Nerd Font](https://www.nerdfonts.com/) — JetBrainsMono Nerd Font is used throughout (terminal, GTK, rofi)
+- `bspwm`, `sxhkd`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`, `fastfetch`, `feh`, `fish`, `scrot`, `btop`, `pamixer`, `xdotool`
+- A [Nerd Font](https://www.nerdfonts.com/) — JetBrainsMono Nerd Font is used throughout (terminal, GTK, rofi, polybar icons), plus the Material Design Icons font for a couple of polybar glyphs
+- GTK theme **Tokyonight-Pink-Dark-Storm** ([Fausto-Korpsvart/Tokyonight-GTK-Theme](https://github.com/Fausto-Korpsvart/Tokyonight-GTK-Theme), needs `gtk2-engines-murrine` + `sassc` to build) and icon theme **Tela-pink-dark** ([vinceliuice/Tela-icon-theme](https://github.com/vinceliuice/Tela-icon-theme)) so GTK apps (Thunar, etc.) match the rest of the rice instead of falling back to a light default theme
 
-`install.sh` checks for all of the above and offers to install anything missing via `apt`.
+`install.sh` checks for all of the above and offers to install/build anything missing.
 
 ## Installation
 
@@ -36,9 +37,13 @@ cd ~/japan-rice
 The installer will:
 
 1. Check for missing dependencies and optionally `apt install` them
-2. Symlink every tracked config/script from this folder into its real location under `$HOME` (e.g. `japan-rice/.config/kitty/kitty.conf` → `~/.config/kitty/kitty.conf`)
-3. Back up anything already at the destination (that isn't already one of these symlinks) into `~/.japan-rice-backup-<timestamp>/`
-4. `chmod +x` all scripts
+2. Check for the Nerd Font / Material Design Icons font and download/install them if missing
+3. Check for the Tokyonight GTK theme and Tela icon theme and build/install them from source if missing
+4. Set a sane default GTK file-chooser window size (`gsettings`) so Open/Save dialogs don't default to a huge size
+5. Create `~/Pictures/Screenshots` (scrot's target directory)
+6. Symlink every tracked config/script from this folder into its real location under `$HOME` (e.g. `japan-rice/.config/kitty/kitty.conf` → `~/.config/kitty/kitty.conf`)
+7. Back up anything already at the destination (that isn't already one of these symlinks) into `~/.japan-rice-backup-<timestamp>/`
+8. `chmod +x` all scripts
 
 Restart bspwm afterwards (`Ctrl+Shift+R`) or re-login for everything to take effect.
 
@@ -105,7 +110,7 @@ Only files actually referenced by `bspwmrc`, `sxhkdrc`, or `polybar/modules.ini`
 
 | Shortcut | Action |
 |---|---|
-| `Super + Return` | Open terminal (kitty) |
+| `Ctrl + Alt + T` | Open terminal (kitty) |
 | `Super + E` | File explorer (Thunar) |
 | `Super + D` | Show desktop (hide/restore all windows) |
 | `Super + S` | Search / app launcher (rofi) |
@@ -169,10 +174,12 @@ Only files actually referenced by `bspwmrc`, `sxhkdrc`, or `polybar/modules.ini`
 | Purple | `#bb9af7` | Secondary accent |
 | Cyan | `#7dcfff` | Tertiary accent |
 
-Font: **JetBrainsMono Nerd Font** (terminal, GTK, rofi). GTK theme: **Dracula-pink-accent**. Icon theme: **Papirus** (with `dracula-icons-main` overrides).
+Font: **JetBrainsMono Nerd Font** (terminal, GTK, rofi). GTK theme: **Tokyonight-Pink-Dark-Storm**. Icon theme: **Tela-pink-dark**.
 
 ## Notes
 
 - `redshift` was removed from this rice (previously autostarted in `bspwmrc`) — not tracked here.
 - `flameshot` was replaced with `scrot` for screenshots.
 - The old vim-style (`h/j/k/l`) window navigation keys were replaced with arrow keys as part of the Windows-style remap; the previous `sxhkdrc` is kept at `.config/sxhkd/sxhkdrc.bak-before-windows-remap` for reference/rollback.
+- The polybar `VOL` module runs `bin/volume --status` (a `pamixer`/PipeWire wrapper) instead of polybar's built-in `internal/alsa`, since this rice targets PipeWire setups where the raw ALSA card/mixer polybar defaults to often doesn't exist.
+- File/Save dialogs opened via `xdg-desktop-portal-gtk` (Chrome, Firefox, etc.) are pinned to a fixed centered floating size by a `bspwmrc` rule — left alone, they default to a size taller than most screens and their Open/Cancel buttons end up off-screen.
