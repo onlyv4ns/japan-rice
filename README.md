@@ -21,7 +21,7 @@ A Japan-themed [bspwm](https://github.com/baskerville/bspwm) desktop rice — To
 ## Requirements
 
 - Arch/Debian/Ubuntu-family Linux (tested on Ubuntu 26.04) with Xorg
-- `bspwm`, `sxhkd`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`, `fastfetch`, `feh`, `fish`, `scrot`, `btop`, `pamixer`, `xdotool`
+- `bspwm`, `sxhkd`, `polybar`, `picom`, `dunst`, `rofi`, `kitty`, `fastfetch`, `feh`, `fish`, `scrot`, `btop`, `htop`, `pamixer`, `xdotool`, `neovim`
 - A [Nerd Font](https://www.nerdfonts.com/) — JetBrainsMono Nerd Font is used throughout (terminal, GTK, rofi, polybar icons), plus the Material Design Icons font for a couple of polybar glyphs
 - GTK theme **Tokyonight-Pink-Dark-Storm** ([Fausto-Korpsvart/Tokyonight-GTK-Theme](https://github.com/Fausto-Korpsvart/Tokyonight-GTK-Theme), needs `gtk2-engines-murrine` + `sassc` to build) and icon theme **Tela-pink-dark** ([vinceliuice/Tela-icon-theme](https://github.com/vinceliuice/Tela-icon-theme)) so GTK apps (Thunar, etc.) match the rest of the rice instead of falling back to a light default theme
 
@@ -183,3 +183,5 @@ Font: **JetBrainsMono Nerd Font** (terminal, GTK, rofi). GTK theme: **Tokyonight
 - The old vim-style (`h/j/k/l`) window navigation keys were replaced with arrow keys as part of the Windows-style remap; the previous `sxhkdrc` is kept at `.config/sxhkd/sxhkdrc.bak-before-windows-remap` for reference/rollback.
 - The polybar `VOL` module runs `bin/volume --status` (a `pamixer`/PipeWire wrapper) instead of polybar's built-in `internal/alsa`, since this rice targets PipeWire setups where the raw ALSA card/mixer polybar defaults to often doesn't exist.
 - File/Save dialogs opened via `xdg-desktop-portal-gtk` (Chrome, Firefox, etc.) are pinned to a fixed centered floating size by a `bspwmrc` rule — left alone, they default to a size taller than most screens and their Open/Cancel buttons end up off-screen.
+- `.config/nvim/init.lua` is a minimal config that just bootstraps [lazy.nvim](https://github.com/folke/lazy.nvim) and applies `tokyonight.nvim` (`night` style) to match kitty's palette — no LSP/plugins beyond that.
+- `.config/htop/htoprc` uses the `Black Night` built-in color scheme — the closest match to this rice's palette htop supports. Unlike kitty/nvim/btop, htop only ships a handful of hardcoded schemes and can't be given arbitrary hex colors.

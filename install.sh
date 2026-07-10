@@ -25,6 +25,8 @@ FILES=(
   .config/rofi/config.rasi
   .config/rofi/catppuccin.rasi
   .config/gtk-3.0/settings.ini
+  .config/nvim/init.lua
+  .config/htop/htoprc
   .Xresources
   bin/toggle-polybar
   bin/random_wallpaper
@@ -44,7 +46,7 @@ FILES=(
   Pictures/bg.png
 )
 
-DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop pamixer xdotool)
+DEPS=(bspwm sxhkd polybar picom dunst rofi kitty fastfetch feh fish scrot btop pamixer xdotool htop)
 
 NERD_FONT_ZIP_URL="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
 NERD_FONT_DEST="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
@@ -70,6 +72,19 @@ else
   echo "All dependencies already installed."
 fi
 echo
+
+# Handled separately from DEPS: the command is "nvim" but the apt package is
+# "neovim", which doesn't fit the DEPS loop's command==package assumption.
+if ! command -v nvim >/dev/null 2>&1; then
+  echo "Missing: neovim"
+  read -rp "Install it via apt now? [y/N] " ans
+  if [[ "$ans" =~ ^[Yy]$ ]]; then
+    sudo apt update && sudo apt install -y neovim
+  else
+    echo "Skipping; the fish 'n' alias and .config/nvim won't work until installed."
+  fi
+  echo
+fi
 
 echo "-- Checking fonts --"
 # polybar/kitty rely on icon glyphs (power button, workspace icons, focused_app
